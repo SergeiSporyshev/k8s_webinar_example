@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: fpm
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fpm
+  template:
+    metadata:
+      labels:
+        app: fpm
+    spec:
+      containers:
+      - name: web-fpm
+        image:
+        ports:
+        - containerPort: 9000
+          protocol: TCP
+        env:
+        - name: "STORAGE_HOST"
+          value: ""
+        - name: "SESSION_DRIVER"
+          value: "redis"
+        - name: "APP_VERSION"
+          value: ""
+        - name: "APP_KEY"
+          valueFrom:
+            secretKeyRef:
+              name: appkey
+              key: appKey
+        - name: "DB_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name: db-pass
+              key: dbPass
+        envFrom:
+        - configMapRef:
+            name: db-config
+        - configMapRef:
+            name: redis-config

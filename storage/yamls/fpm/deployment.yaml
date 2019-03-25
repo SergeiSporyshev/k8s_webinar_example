@@ -1,0 +1,46 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: storage-fpm
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: storage-fpm
+  template:
+    metadata:
+      labels:
+        app: storage-fpm
+    spec:
+      volumes:
+      - name: uploads-storage
+        persistentVolumeClaim:
+          claimName: storage-pvc
+      containers:
+      - name: web-fpm
+        image:
+        volumeMounts:
+          - mountPath: "/var/www/vhosts/site/public/uploads"
+            name: uploads-storage
+        ports:
+        - containerPort: 9000
+          protocol: TCP
+        env:
+        - name: "SESSION_DRIVER"
+          value: "file"
+        - name: "APP_VERSION"
+          value: "2"
+        - name: "APP_KEY"
+          valueFrom:
+            secretKeyRef:
+              name: app-storage-key
+              key: appKey
+        - name: "DB_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name:  db-storage-pass
+              key: dbPass
+        envFrom:
+        - configMapRef:
+            name: storage-db-config

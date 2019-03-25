@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: storage-nginx
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: storage-nginx
+  template:
+    metadata:
+      labels:
+        app: storage-nginx
+    spec:
+      volumes:
+        - name: uploads-storage
+          persistentVolumeClaim:
+            claimName: storage-pvc
+      containers:
+      - name: web-fpm
+        image:
+        volumeMounts:
+          - mountPath: "/var/www/vhosts/site/public/uploads"
+            name: uploads-storage
+        ports:
+        - containerPort: 80
+          protocol: TCP

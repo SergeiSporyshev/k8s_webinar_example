@@ -1,0 +1,19 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+      protocol: TCP
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: redis
+subsets:
+  - addresses:
+      - ip:
+    ports:
+      - port: 6379

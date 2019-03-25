@@ -1,0 +1,29 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: storage-pv
+  labels:
+    name: storage-volume
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/var/www/uploads"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: storage-pvc
+spec:
+  storageClassName: manual
+  selector:
+    matchLabels:
+      name: storage-volume
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
